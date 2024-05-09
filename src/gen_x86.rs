@@ -14,13 +14,13 @@ macro_rules! emit{
     ($fmt:expr, $($arg:tt)*) => (print!(concat!("\t", $fmt, "\n"), $($arg)*));
 }
 
-fn emit_cmp(ir: IR, cmp: u8) {
+fn emit_cmp(ir: IR, cmpn: u16) {
     let lhs = ir.lhs.unwrap();
     let rhs = ir.rhs.unwrap();
     emit!("cmp {}, {}", REGS[lhs], REGS[rhs]);
     emit!("push fr");
     emit!("pop {}", REGS[lhs]);
-    emit!("loadn r0, #{}", cmp);
+    emit!("loadn r0, #{}", cmpn);
     emit!("and {}, {}, r0", REGS[lhs], REGS[lhs]);
 }
 

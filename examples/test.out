@@ -1,0 +1,5 @@
+error at examples/test.c:1:10
+
+int myvar = 1;
+         ^
+

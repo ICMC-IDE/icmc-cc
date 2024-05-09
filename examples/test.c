@@ -1,9 +1,6 @@
-int i;
+int myvar = 1;
 
 int main()
 {
-  for (i = 0; i < 1200; i++)
-  {
-    outchar('A', i);
-  }
+  1 != 2;
 }
