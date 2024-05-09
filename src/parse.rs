@@ -82,7 +82,6 @@ pub enum NodeType {
     PostDec(Box<Node>),            // post --
     Return(Box<Node>),             // "return", stmt
     Outchar(Box<Node>, Box<Node>), // Outchar
-    Inchar,                        // Inchar
     Sizeof(Box<Node>),             // "sizeof", expr
     Alignof(Box<Node>),            // "_Alignof", expr
     Call(String, Vec<Node>),       // Function call(name, args)
@@ -430,7 +429,6 @@ impl<'a> Parser<'a> {
         if self.consume(TokenType::Alignof) {
             return new_expr!(NodeType::Alignof, self.unary());
         }
-
         if self.consume(TokenType::Inc) {
             return Node::new_binop(TokenType::AddEQ, self.unary(), Node::new_num(1));
         }
@@ -826,12 +824,6 @@ impl<'a> Parser<'a> {
                 self.expect(TokenType::RightParen);
                 self.expect(TokenType::Semicolon);
                 Node::new(NodeType::Outchar(Box::new(ch), Box::new(pos)))
-            }
-            TokenType::Inchar => {
-                self.expect(TokenType::LeftParen);
-                self.expect(TokenType::RightParen);
-                self.expect(TokenType::Semicolon);
-                Node::new(NodeType::Inchar)
             }
             TokenType::LeftBrace => {
                 let mut stmts = vec![];

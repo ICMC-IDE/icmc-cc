@@ -538,10 +538,6 @@ fn gen_stmt(node: Node) {
             kill(r);
             kill(p);
         }
-        NodeType::Inchar => {
-            add(IROp::Inchar, None, None);
-            *NUM_REGS.lock().unwrap() += 1;
-        }
         NodeType::ExprStmt(expr) => {
             let r = gen_expr(expr);
             kill(r);

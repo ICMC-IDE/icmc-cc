@@ -1,14 +1,9 @@
-#define TEST 1
-
-int rn() {
-  return 1;
-}
-
 int i;
 
-int main() {
-  if (rn() == 1) {
-    outchar('A', 2);
+int main()
+{
+  for (i = 0; i < 1200; i++)
+  {
+    outchar('A', i);
   }
-  return 0;
 }

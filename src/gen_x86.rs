@@ -20,7 +20,8 @@ fn emit_cmp(ir: IR, cmp: u8) {
     emit!("cmp {}, {}", REGS[lhs], REGS[rhs]);
     emit!("push fr");
     emit!("pop {}", REGS[lhs]);
-    emit!("shiftr0 {}, #{}", REGS[lhs], cmp);
+    emit!("loadn r0, #{}", cmp);
+    emit!("and {}, {}, r0", REGS[lhs], REGS[lhs]);
 }
 
 fn gen(f: Function) {
@@ -56,9 +57,9 @@ fn gen(f: Function) {
             Label => println!("L{}:", lhs),
             LabelAddr(name) => emit!("loadn {}, #{}", REGS[lhs], name),
             Neg => emit!("not {}", REGS[lhs]),
-            EQ => emit_cmp(ir, 2),
+            EQ => emit_cmp(ir, 0b100),
             NE => emit_cmp(ir, 0),
-            LT => emit_cmp(ir, 1),
+            LT => emit_cmp(ir, 0b10),
             LE => emit_cmp(ir, 0),
             AND => emit!("and {}, {}, {}", REGS[lhs], REGS[lhs], REGS[rhs]),
             OR => emit!("or {}, {}, {}", REGS[lhs], REGS[lhs], REGS[rhs]),
@@ -67,14 +68,8 @@ fn gen(f: Function) {
             SHR => emit!("shiftr0 {}, {}", REGS[lhs], REGS[rhs]),
             Mod => emit!("mod {}, {}, {}", REGS[lhs], REGS[lhs], REGS[rhs]),
             Jmp => emit!("jmp L{}", lhs),
-            If => {
-                emit!("dec {}", REGS[lhs]);
-                emit!("jz L{}", rhs);
-            }
-            Unless => {
-                emit!("dec {}", REGS[lhs]);
-                emit!("jnz L{}", rhs);
-            }
+            If => emit!("jnz L{}", rhs),
+            Unless => emit!("jz L{}", rhs),
             Load(_) => emit!("loadi {}, {}", REGS[lhs], REGS[rhs]),
             Store(_) => emit!("storei {}, {}", REGS[lhs], REGS[rhs]),
             StoreArg(_) => {
