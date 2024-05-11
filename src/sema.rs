@@ -109,12 +109,12 @@ fn walk(mut node: Node, decay: bool) -> Node {
     use self::NodeType::*;
     let op = node.op.clone();
     match op {
-        Num(_) | Null | Break => (),
+        Num(_) | Null | Break | Inchar => (),
         Str(data, len) => {
             // Quoted from 9cc
             // > A string literal is converted to a reference to an anonymous
             // > global variable of type char array.
-            let name = format!(".L.str{}", *STRLABEL.lock().unwrap());
+            let name = format!("str{}", *STRLABEL.lock().unwrap());
             *STRLABEL.lock().unwrap() += 1;
             let var = Var::new_global(node.ty.clone(), name, data, len, false);
             let name = var.name.clone();

@@ -76,6 +76,7 @@ pub enum IROp {
     Mov,
     Return,
     Outchar,
+    Inchar,
     Call(String, usize, [usize; 6]),
     Label,
     LabelAddr(String),
@@ -301,6 +302,12 @@ fn gen_expr(node: Box<Node>) -> Option<usize> {
             for arg in args_ir.iter().take(args.len()) {
                 kill(Some(*arg));
             }
+            r
+        }
+        NodeType::Inchar => {
+            let r = Some(*NUM_REGS.lock().unwrap());
+            *NUM_REGS.lock().unwrap() += 1;
+            add(IROp::Inchar, r, None);
             r
         }
         NodeType::Addr(expr) => gen_lval(expr),

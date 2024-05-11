@@ -82,6 +82,7 @@ pub enum NodeType {
     PostDec(Box<Node>),            // post --
     Return(Box<Node>),             // "return", stmt
     Outchar(Box<Node>, Box<Node>), // Outchar
+    Inchar,                        // Inchar
     Sizeof(Box<Node>),             // "sizeof", expr
     Alignof(Box<Node>),            // "_Alignof", expr
     Call(String, Vec<Node>),       // Function call(name, args)
@@ -365,6 +366,7 @@ impl<'a> Parser<'a> {
                 self.expect(TokenType::RightParen);
                 node
             }
+            TokenType::Inchar => Node::new(NodeType::Inchar),
             _ => t.bad_token("number expected"),
         }
     }
@@ -817,11 +819,9 @@ impl<'a> Parser<'a> {
                 Node::new(NodeType::Return(Box::new(expr)))
             }
             TokenType::Outchar => {
-                self.expect(TokenType::LeftParen);
                 let ch = self.unary();
                 self.expect(TokenType::Comma);
                 let pos = self.unary();
-                self.expect(TokenType::RightParen);
                 self.expect(TokenType::Semicolon);
                 Node::new(NodeType::Outchar(Box::new(ch), Box::new(pos)))
             }

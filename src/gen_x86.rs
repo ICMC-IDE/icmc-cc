@@ -42,6 +42,7 @@ fn gen(f: Function) {
                 emit!("jmp {}", ret);
             }
             Outchar => emit!("outchar {}, {}", REGS[lhs], REGS[rhs]),
+            Inchar => emit!("inchar {}", REGS[lhs]),
             Call(name, _, _) => {
                 // for i in 0..nargs {
                 //     emit!("mov {}, {}", ARGREGS[i], REGS[args[i]]);
@@ -58,9 +59,9 @@ fn gen(f: Function) {
             LabelAddr(name) => emit!("loadn {}, #{}", REGS[lhs], name),
             Neg => emit!("not {}", REGS[lhs]),
             EQ => emit_cmp(ir, 0b100),
-            NE => emit_cmp(ir, 0),
+            NE => emit_cmp(ir, 0), // TODO
             LT => emit_cmp(ir, 0b10),
-            LE => emit_cmp(ir, 0),
+            LE => emit_cmp(ir, 0b110),
             AND => emit!("and {}, {}, {}", REGS[lhs], REGS[lhs], REGS[rhs]),
             OR => emit!("or {}, {}, {}", REGS[lhs], REGS[lhs], REGS[rhs]),
             XOR => emit!("xor {}, {}, {}", REGS[lhs], REGS[lhs], REGS[rhs]),
@@ -125,10 +126,11 @@ pub fn gen_x86(globals: Vec<Var>, fns: Vec<Function>) {
             if is_extern {
                 continue;
             }
-            println!("{} : var #{}", var.name, len);
 
             if data.len() > 0 {
-                println!("static {}, #{}", var.name, data);
+                println!("{} : string #{}", var.name, data);
+            } else {
+                println!("{} : var #{}", var.name, len);
             }
 
             continue;

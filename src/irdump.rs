@@ -45,6 +45,7 @@ impl<'a> From<&'a IROp> for IRInfo {
             Nop => IRInfo::new("NOP", IRType::Noarg),
             Return => IRInfo::new("RET", IRType::Reg),
             Outchar => IRInfo::new("OUTCHAR", IRType::RegReg),
+            Inchar => IRInfo::new("INCHAR", IRType::Reg),
             Store(_) => IRInfo::new("STORE", IRType::Mem),
             StoreArg(_) => IRInfo::new("STORE_ARG", IRType::StoreArg),
             Sub => IRInfo::new("SUB", IRType::RegReg),
