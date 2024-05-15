@@ -1,5 +1,5 @@
+pub mod gen_asm;
 pub mod gen_ir;
-pub mod gen_x86;
 pub mod irdump;
 pub mod parse;
 pub mod preprocess;

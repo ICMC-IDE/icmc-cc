@@ -1,13 +1,13 @@
-extern crate r9cc;
+extern crate icmc_cc;
 
-use r9cc::gen_ir::gen_ir;
-use r9cc::gen_x86::gen_x86;
-use r9cc::irdump::dump_ir;
-use r9cc::parse::parse;
-use r9cc::preprocess::Preprocessor;
-use r9cc::regalloc::alloc_regs;
-use r9cc::sema::sema;
-use r9cc::token::tokenize;
+use icmc_cc::gen_asm::gen_asm;
+use icmc_cc::gen_ir::gen_ir;
+use icmc_cc::irdump::dump_ir;
+use icmc_cc::parse::parse;
+use icmc_cc::preprocess::Preprocessor;
+use icmc_cc::regalloc::alloc_regs;
+use icmc_cc::sema::sema;
+use icmc_cc::token::tokenize;
 
 use std::env;
 use std::process;
@@ -57,5 +57,5 @@ fn main() {
         dump_ir(&fns);
     }
 
-    gen_x86(globals, fns);
+    gen_asm(globals, fns);
 }

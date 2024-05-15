@@ -819,9 +819,9 @@ impl<'a> Parser<'a> {
                 Node::new(NodeType::Return(Box::new(expr)))
             }
             TokenType::Outchar => {
-                let ch = self.unary();
+                let ch = self.assign();
                 self.expect(TokenType::Comma);
-                let pos = self.unary();
+                let pos = self.assign();
                 self.expect(TokenType::Semicolon);
                 Node::new(NodeType::Outchar(Box::new(ch), Box::new(pos)))
             }
