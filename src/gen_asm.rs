@@ -3,17 +3,17 @@ use crate::{Scope, Var, REGS_N};
 
 const REGS: [&str; REGS_N] = ["r1", "r2", "r3", "r4", "r5", "r6", "r7"];
 
+use std::sync::Mutex;
+
+lazy_static! {
+    static ref LABEL: Mutex<usize> = Mutex::new(0);
+}
+
 enum CMPS {
     EQ,
     NE,
     LT,
     LE,
-}
-
-use std::sync::Mutex;
-
-lazy_static! {
-    static ref LABEL: Mutex<usize> = Mutex::new(0);
 }
 
 macro_rules! emit{
@@ -29,23 +29,26 @@ fn emit_cmp(ir: IR, cmp: CMPS) {
     emit!("push fr");
     emit!("pop {}", REGS[lhs]);
 
-    match cmp {
-        CMPS::EQ => emit!("loadn r7, #{}", 0b100),
-        CMPS::NE => emit!("loadn r7, #{}", 0),
-        CMPS::LT => emit!("loadn r7, #{}", 0b10),
-        CMPS::LE => emit!("loadn r7, #{}", 0b110),
-    }
+    let mask: u16 = match cmp {
+        CMPS::EQ => 0b100,
+        CMPS::NE => {
+            emit!("not {}, {}", REGS[lhs], REGS[lhs]);
+            0b100
+        }
+        CMPS::LT => 0b10,
+        CMPS::LE => 0b110,
+    };
 
+    emit!("loadn r7, #{}", mask);
     emit!("and {}, {}, r7", REGS[lhs], REGS[lhs]);
 }
 
 fn gen(f: Function) {
     use self::IROp::*;
-    let mut last_cmp: Option<CMPS> = None;
     let ret = format!("Lend{}", *LABEL.lock().unwrap());
     *LABEL.lock().unwrap() += 1;
 
-    println!("F{}:", f.name);
+    println!("{}:", f.name);
 
     if f.stacksize > 0 {
         emit!("push r0");
@@ -71,7 +74,7 @@ fn gen(f: Function) {
                 for i in nargs..lhs {
                     emit!("push {}", REGS[i]);
                 }
-                emit!("call F{}", name);
+                emit!("call {}", name);
                 emit!("mov {}, r7", REGS[lhs]);
                 for i in (nargs..lhs).rev() {
                     emit!("pop {}", REGS[i]);
@@ -83,22 +86,10 @@ fn gen(f: Function) {
                 emit!("not {}, {}", REGS[lhs], REGS[lhs]);
                 emit!("inc {}", REGS[lhs]);
             }
-            EQ => {
-                last_cmp = Some(CMPS::EQ);
-                emit_cmp(ir, CMPS::EQ);
-            }
-            NE => {
-                last_cmp = Some(CMPS::NE);
-                emit_cmp(ir, CMPS::NE);
-            } // TODO
-            LT => {
-                last_cmp = Some(CMPS::LT);
-                emit_cmp(ir, CMPS::LT);
-            }
-            LE => {
-                last_cmp = Some(CMPS::LE);
-                emit_cmp(ir, CMPS::LE);
-            }
+            EQ => emit_cmp(ir, CMPS::EQ),
+            NE => emit_cmp(ir, CMPS::NE), // TODO
+            LT => emit_cmp(ir, CMPS::LT),
+            LE => emit_cmp(ir, CMPS::LE),
             AND => emit!("and {}, {}, {}", REGS[lhs], REGS[lhs], REGS[rhs]),
             OR => emit!("or {}, {}, {}", REGS[lhs], REGS[lhs], REGS[rhs]),
             XOR => emit!("xor {}, {}, {}", REGS[lhs], REGS[lhs], REGS[rhs]),
@@ -106,20 +97,8 @@ fn gen(f: Function) {
             SHR => emit!("shiftr0 {}, {}", REGS[lhs], REGS[rhs]),
             Mod => emit!("mod {}, {}, {}", REGS[lhs], REGS[lhs], REGS[rhs]),
             Jmp => emit!("jmp L{}", lhs),
-            If => match last_cmp {
-                Some(CMPS::EQ) => emit!("jne L{}", rhs),
-                Some(CMPS::NE) => emit!("jeq L{}", rhs),
-                Some(CMPS::LT) => emit!("jeg L{}", rhs),
-                Some(CMPS::LE) => emit!("jgr L{}", rhs),
-                _ => unreachable!(),
-            },
-            Unless => match last_cmp {
-                Some(CMPS::EQ) => emit!("jeq L{}", rhs),
-                Some(CMPS::NE) => emit!("jne L{}", rhs),
-                Some(CMPS::LT) => emit!("jle L{}", rhs),
-                Some(CMPS::LE) => emit!("jel L{}", rhs),
-                _ => unreachable!(),
-            },
+            If => emit!("jnz L{}", rhs),
+            Unless => emit!("jz L{}", rhs),
             Load(_) => emit!("loadi {}, {}", REGS[lhs], REGS[rhs]),
             Store(_) => emit!("storei {}, {}", REGS[lhs], REGS[rhs]),
             StoreArg(_) => {
@@ -178,7 +157,7 @@ fn gen(f: Function) {
 }
 
 pub fn gen_asm(globals: Vec<Var>, fns: Vec<Function>) {
-    println!("call Fmain");
+    println!("call main");
     println!("halt");
 
     for f in fns {
