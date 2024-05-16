@@ -13,7 +13,7 @@ use std::env;
 use std::process;
 
 fn usage() -> ! {
-    eprintln!("Usage: 9cc [-dump-ir1] [-dump-ir2] <file>");
+    eprintln!("Usage: icmc-cc [-dump-ir1] [-dump-ir2] <file>");
     process::exit(1)
 }
 
