@@ -2,6 +2,19 @@
 
 Compilador de C para o [processador do ICMC](https://github.com/simoesusp/Processador-ICMC/).
 
+## Instalação
+
+### Pré-compilado
+Executáveis pré-compilados estão disponíveis na [página de lançamentos](https://github.com/Thitav/icmc-cc/releases).
+
+### Compilação manual
+Instale o [Rust](https://www.rust-lang.org/tools/install) e execute:
+```bash
+git clone https://github.com/Thitav/icmc-cc
+cd icmc-cc
+cargo build
+```
+
 ## Manual
 
 ### Regras
@@ -33,6 +46,7 @@ Confira os [cabeçalhos das bibliotecas](std/) para uma documentação aprofunda
 - No momento, há um limite de 6 argumentos por função.
 
 ## Convenções
+
 O compilador opera com as seguintes convenções:
 - O registrador `r0` é reservado e armazena o endereço da base da stack da função atual.
 - O registrador `r7` é reservado para operações com valores imediatos, operações com a base da stack e retorno de funções.
