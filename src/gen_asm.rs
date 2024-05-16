@@ -59,7 +59,7 @@ fn gen(f: Function) {
         let lhs = ir.lhs.unwrap();
         let rhs = ir.rhs.unwrap_or(0);
         match ir.op {
-            Imm => emit!("loadn {}, #{}", REGS[lhs], rhs as i16),
+            Imm => emit!("loadn {}, #{}", REGS[lhs], rhs as u16),
             Mov => emit!("mov {}, {}", REGS[lhs], REGS[rhs]),
             Return => {
                 emit!("mov r7, {}", REGS[lhs]);
@@ -79,7 +79,10 @@ fn gen(f: Function) {
             }
             Label => println!("L{}:", lhs),
             LabelAddr(name) => emit!("loadn {}, #{}", REGS[lhs], name),
-            Neg => emit!("not {}, {}", REGS[lhs], REGS[lhs]),
+            Neg => {
+                emit!("not {}, {}", REGS[lhs], REGS[lhs]);
+                emit!("inc {}", REGS[lhs]);
+            }
             EQ => {
                 last_cmp = Some(CMPS::EQ);
                 emit_cmp(ir, CMPS::EQ);
@@ -132,7 +135,7 @@ fn gen(f: Function) {
                 if rhs == 1 {
                     emit!("inc {}", REGS[lhs]);
                 } else {
-                    emit!("loadn {}, #{}", REGS[lhs + 1], rhs as i16);
+                    emit!("loadn {}, #{}", REGS[lhs + 1], rhs as u16);
                     emit!("add {}, {}, {}", REGS[lhs], REGS[lhs], REGS[lhs + 1]);
                 }
             }
@@ -144,7 +147,7 @@ fn gen(f: Function) {
                 if rhs == 1 {
                     emit!("dec {}", REGS[lhs]);
                 } else {
-                    emit!("loadn {}, #{}", REGS[lhs + 1], rhs as i16);
+                    emit!("loadn {}, #{}", REGS[lhs + 1], rhs as u16);
                     emit!("sub {}, {}, {}", REGS[lhs], REGS[lhs], REGS[lhs + 1]);
                 }
             }
@@ -155,9 +158,9 @@ fn gen(f: Function) {
             Mul => emit!("mul {}, {}, {}", REGS[lhs], REGS[lhs], REGS[rhs]),
             MulImm => {
                 if rhs < 256 && rhs.count_ones() == 1 {
-                    emit!("shiftl0 {}, {}", REGS[lhs], rhs.trailing_zeros());
+                    emit!("shiftl0 {}, #{}", REGS[lhs], rhs.trailing_zeros());
                 } else {
-                    emit!("loadn r7, #{}", rhs as i16);
+                    emit!("loadn r7, #{}", rhs as u16);
                     emit!("mul {}, {}, r7", REGS[lhs], REGS[lhs]);
                 }
             }
