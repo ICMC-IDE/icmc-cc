@@ -8,8 +8,8 @@ use std::io;
 use std::io::prelude::*;
 use std::rc::Rc;
 
-pub fn tokenize(path: String, ctx: &mut preprocess::Preprocessor) -> Vec<Token> {
-    let mut tokenizer = Tokenizer::new(Rc::new(path));
+pub fn tokenize(data: String, filename: String, ctx: &mut preprocess::Preprocessor) -> Vec<Token> {
+    let mut tokenizer = Tokenizer::new(Rc::new(data), Rc::new(filename));
     tokenizer.canonicalize_newline();
     tokenizer.remove_backslash_newline();
     tokenizer.scan(&keyword_map());
@@ -151,9 +151,9 @@ struct Tokenizer {
 }
 
 impl Tokenizer {
-    fn new(filename: Rc<String>) -> Self {
+    fn new(data: Rc<String>, filename: Rc<String>) -> Self {
         Tokenizer {
-            p: Rc::new(Self::read_file(&filename).chars().collect()),
+            p: Rc::new(data.chars().collect()),
             filename,
             pos: 0,
             tokens: vec![],

@@ -340,7 +340,8 @@ impl Preprocessor {
         if t.ty != TokenType::NewLine {
             t.bad_token("newline expected");
         }
-        let mut v = tokenize(path, self);
+        // let mut v = tokenize(path, self);
+        let mut v = Vec::new();
         self.env.output.append(&mut v);
     }
 
