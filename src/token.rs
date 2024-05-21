@@ -3,9 +3,6 @@ use crate::CharacterType;
 use crate::TokenType;
 
 use std::collections::HashMap;
-use std::fs::File;
-use std::io;
-use std::io::prelude::*;
 use std::rc::Rc;
 
 pub fn tokenize(data: String, filename: String, ctx: &mut preprocess::Preprocessor) -> Vec<Token> {
@@ -158,20 +155,6 @@ impl Tokenizer {
             pos: 0,
             tokens: vec![],
         }
-    }
-
-    fn read_file(filename: &str) -> String {
-        let mut input = String::new();
-        let mut fp = io::stdin();
-        if filename != &"-".to_string() {
-            let mut fp = File::open(filename).expect("file not found");
-            fp.read_to_string(&mut input)
-                .expect("something went wrong reading the file");
-            return input;
-        }
-        fp.read_to_string(&mut input)
-            .expect("something went wrong reading the file");
-        input
     }
 
     fn new_token(&self, ty: TokenType) -> Token {

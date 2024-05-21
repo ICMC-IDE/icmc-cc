@@ -6,3 +6,4 @@ edition = '2018'
 
 [dependencies]
 lazy_static = "*"
+structopt = "0.3.26"

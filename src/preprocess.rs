@@ -130,13 +130,15 @@ impl Macro {
 pub struct Preprocessor {
     macros: HashMap<String, Macro>,
     pub env: Box<Env>,
+    file_provider: Box<dyn Fn(&str) -> String>,
 }
 
 impl Preprocessor {
-    pub fn new() -> Self {
+    pub fn new(file_provider: Box<dyn Fn(&str) -> String>) -> Self {
         Preprocessor {
             macros: HashMap::new(),
             env: Box::new(Env::new(vec![], None)),
+            file_provider,
         }
     }
 
@@ -340,8 +342,8 @@ impl Preprocessor {
         if t.ty != TokenType::NewLine {
             t.bad_token("newline expected");
         }
-        // let mut v = tokenize(path, self);
-        let mut v = Vec::new();
+
+        let mut v = tokenize((self.file_provider)(path.as_str()), path, self);
         self.env.output.append(&mut v);
     }
 

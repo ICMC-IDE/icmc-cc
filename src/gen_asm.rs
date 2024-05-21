@@ -18,11 +18,11 @@ enum CMPS {
 }
 
 macro_rules! emit{
-    ($out:expr, $fmt:expr) => (writeln!($out, concat!("\t", $fmt, "\n")).unwrap());
-    ($out:expr, $fmt:expr, $($arg:tt)*) => (writeln!($out, concat!("\t", $fmt, "\n"), $($arg)*).unwrap());
+    ($out:expr, $fmt:expr) => (write!($out, concat!("\t", $fmt, "\n")).unwrap());
+    ($out:expr, $fmt:expr, $($arg:tt)*) => (write!($out, concat!("\t", $fmt, "\n"), $($arg)*).unwrap());
 }
 
-fn emit_cmp(output: &mut Vec<u8>, ir: IR, cmp: CMPS) {
+fn emit_cmp(output: &mut impl Write, ir: IR, cmp: CMPS) {
     let lhs = ir.lhs.unwrap();
     let rhs = ir.rhs.unwrap();
 
@@ -44,7 +44,7 @@ fn emit_cmp(output: &mut Vec<u8>, ir: IR, cmp: CMPS) {
     emit!(output, "and {}, {}, r7", REGS[lhs], REGS[lhs]);
 }
 
-fn gen(output: &mut Vec<u8>, f: Function) {
+fn gen(output: &mut impl Write, f: Function) {
     use self::IROp::*;
     let ret = format!("Lend{}", *LABEL.lock().unwrap());
     *LABEL.lock().unwrap() += 1;
@@ -161,7 +161,7 @@ fn gen(output: &mut Vec<u8>, f: Function) {
         }
     }
 
-    writeln!(output, "{}:", ret);
+    writeln!(output, "{}:", ret).unwrap();
     if f.stacksize > 0 {
         emit!(output, "mov sp, r0");
         emit!(output, "pop r0")
@@ -169,7 +169,7 @@ fn gen(output: &mut Vec<u8>, f: Function) {
     emit!(output, "rts");
 }
 
-pub fn gen_asm(output: &mut Vec<u8>, globals: Vec<Var>, fns: Vec<Function>) {
+pub fn gen_asm(output: &mut impl Write, globals: Vec<Var>, fns: Vec<Function>) {
     writeln!(output, "call main").unwrap();
     writeln!(output, "halt").unwrap();
 
