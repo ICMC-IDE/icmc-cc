@@ -120,5 +120,21 @@ prints:
     pop r2
     rts
 
+; sfill : preenche a tela com um caracter
+; in r1 : caracter
+sfill:
+  push r2
+
+  loadn r2, #1200
+
+  sfill_loop:
+    dec r2
+    outchar r1, r2
+    jnz sfill_loop
+
+  sfill_rts:
+    pop r2
+    rts
+
 __cursor : var #1 
 static __cursor, #0

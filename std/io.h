@@ -11,3 +11,4 @@ extern void scans(char *str, int count);
 extern void puts(char *str, int pos);
 extern void printc(char ch);
 extern void prints(char *str);
+extern void sfill(char ch);
