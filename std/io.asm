@@ -14,6 +14,44 @@ getc:
     pop r1
     rts
 
+; scans   : aguarde e le uma string do teclado
+; in * r1 : string de destino
+; in r2   : numero de caracteres a serem lidos
+scans:
+  push r3
+  push r4
+  push r5
+  push r6
+
+  xor r3, r3, r3
+  loadn r4, #13 ; '\r'
+  loadn r5, #255  
+
+  scans_loop:
+    cmp r2, r3
+    jel scans_rts
+
+    scans_loop_inchar:
+      inchar r6
+      cmp r6, r5
+      jeq scans_loop_inchar
+    cmp r6, r4
+    jeq scans_rts
+
+    storei r1, r6
+    inc r1
+    dec r2
+    jmp scans_loop
+
+  scans_rts:
+    storei r1, r3
+    
+    pop r3
+    pop r4
+    pop r5
+    pop r6
+    rts
+
 ; puts    : imprime uma string em uma posição da tela
 ; in * r1 : string
 ; in r2   : posição
@@ -24,7 +62,7 @@ puts:
   push r6
   push r7
 
-  loadn r5, #0
+  xor r5, r5, r5
   loadn r6, #'\n'
   loadn r7, #40
 
@@ -32,7 +70,7 @@ puts:
     loadi r3, r1
 
     cmp r3, r5
-    jeq puts_rts
+    jel puts_rts
 
     cmp r3, r6
     jne puts_loop_ne
