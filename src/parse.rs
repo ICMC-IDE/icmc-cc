@@ -819,9 +819,11 @@ impl<'a> Parser<'a> {
                 Node::new(NodeType::Return(Box::new(expr)))
             }
             TokenType::Outchar => {
+                self.expect(TokenType::LeftParen);
                 let ch = self.assign();
                 self.expect(TokenType::Comma);
                 let pos = self.assign();
+                self.expect(TokenType::RightParen);
                 self.expect(TokenType::Semicolon);
                 Node::new(NodeType::Outchar(Box::new(ch), Box::new(pos)))
             }
@@ -873,7 +875,9 @@ impl<'a> Parser<'a> {
         // Function
         if self.consume(TokenType::LeftParen) {
             let mut args = vec![];
-            if !self.consume(TokenType::RightParen) {
+            if self.consume(TokenType::Void) {
+                self.expect(TokenType::RightParen);
+            } else if !self.consume(TokenType::RightParen) {
                 args.push(self.param_declaration());
                 while self.consume(TokenType::Comma) {
                     args.push(self.param_declaration());

@@ -30,8 +30,8 @@ fn keyword_map() -> HashMap<String, TokenType> {
     map.insert("if".into(), TokenType::If);
     map.insert("int".into(), TokenType::Int);
     map.insert("return".into(), TokenType::Return);
-    map.insert("outchar".into(), TokenType::Outchar);
-    map.insert("inchar".into(), TokenType::Inchar);
+    map.insert("_outchar".into(), TokenType::Outchar);
+    map.insert("_inchar".into(), TokenType::Inchar);
     map.insert("sizeof".into(), TokenType::Sizeof);
     map.insert("struct".into(), TokenType::Struct);
     map.insert("typedef".into(), TokenType::Typedef);
