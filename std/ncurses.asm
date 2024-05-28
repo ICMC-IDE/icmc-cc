@@ -1,4 +1,4 @@
-; getch : wait for a key press
+; getch : waits for a key press
 ; in void
 ; out r7 : key pressed
 ; internal r1, r2, r3
@@ -27,7 +27,7 @@ getch:
     pop r1
     rts
 
-; erase : set all screen positions to 0
+; erase : sets all screen positions to 0
 ; in void
 ; out void
 ; internal r1, r2
@@ -48,7 +48,7 @@ erase:
     pop r1
     rts
 
-; move  : move cursor to the specified position
+; move  : moves cursor to the specified position
 ; in r1 : x coordinate
 ; in r2 : y coordinate
 ; out void

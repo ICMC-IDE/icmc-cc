@@ -1,1 +1,2 @@
-extern void puts(char *str);
+extern void putchar(char c);
+extern void puts(char *s);
