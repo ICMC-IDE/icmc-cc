@@ -372,6 +372,10 @@ impl Tokenizer {
                 self.pos += 2;
                 self.parse_number(16);
             }
+            Some(&['0', 'b']) | Some(&['0', 'B']) => {
+                self.pos += 2;
+                self.parse_number(2);
+            }
             Some(&['0', _]) => {
                 self.parse_number(8);
             }
