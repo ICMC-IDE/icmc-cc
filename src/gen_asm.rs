@@ -184,7 +184,7 @@ pub fn gen_asm(output: &mut impl Write, globals: Vec<Var>, fns: Vec<Function>) {
             }
 
             if data.len() > 0 {
-                writeln!(output, "{} : string \"{}\"", var.name, data).unwrap();
+                writeln!(output, "{} : string {:?}", var.name, data).unwrap();
             } else {
                 writeln!(output, "{} : var #{}", var.name, len).unwrap();
             }
