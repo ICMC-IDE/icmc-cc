@@ -14,8 +14,8 @@ use std::io::{stdin, stdout, Read, Write};
 
 use structopt::StructOpt;
 
-fn fs_read(path: &str) -> String {
-    fs::read_to_string(path).unwrap()
+fn fs_read(path: &str) -> Option<String> {
+    Some(fs::read_to_string(path).unwrap())
 }
 
 #[derive(StructOpt, Debug)]
@@ -31,7 +31,7 @@ fn main() {
     let opt = Opt::from_args();
 
     let (input_data, input_file) = match opt.fin {
-        Some(path) => (fs_read(path.as_str()), path),
+        Some(path) => (fs_read(path.as_str()).unwrap(), path),
         None => {
             let mut buf = Vec::new();
             stdin().lock().read_to_end(&mut buf).unwrap();
