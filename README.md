@@ -23,8 +23,8 @@ O compilador segue todas as regras comuns do C99, exceto nos seguintes casos:
 - Apenas os tipos `void`, `char` e `int` são suportados, sendo que os tipos `char` e `int` são iguais (inteiros de 16 bits).
 
 O compilador também suporta os operadores especiais `inchar` e `outchar`:
-- `inchar`: retorna o código da tecla pressionada no instante em que o operador foi chamado, retornando 255 caso nenhuma tecla tenha sido pressionada.
-- `outchar <char>, <pos>`: imprime o caractere `char` na posição da tela especificada por `pos`.
+- `_inchar()`: retorna o código da tecla pressionada no instante em que o operador foi chamado, retornando 255 caso nenhuma tecla tenha sido pressionada.
+- `_outchar(<char>, <pos>)`: imprime o caractere `char` na posição da tela especificada por `pos`.
 
 ### Diretivas de compilação
 O compilador suporta as seguintes diretivas:
