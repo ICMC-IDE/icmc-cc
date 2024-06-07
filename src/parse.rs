@@ -366,7 +366,11 @@ impl<'a> Parser<'a> {
                 self.expect(TokenType::RightParen);
                 node
             }
-            TokenType::Inchar => Node::new(NodeType::Inchar),
+            TokenType::Inchar => {
+                self.expect(TokenType::LeftParen);
+                self.expect(TokenType::RightParen);
+                Node::new(NodeType::Inchar)
+            }
             _ => t.bad_token("number expected"),
         }
     }
