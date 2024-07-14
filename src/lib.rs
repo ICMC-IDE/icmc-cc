@@ -196,3 +196,45 @@ impl Var {
         Var::new(ty, name.clone(), Scope::Global(data, len, is_extern))
     }
 }
+
+#[cfg(target_family = "wasm")]
+mod wasm {
+    use fs::Fs;
+    use wasm_bindgen::prelude::*;
+
+    use super::{
+        gen_asm::gen_asm, gen_ir::gen_ir, parse::parse, preprocess::Preprocessor,
+        regalloc::alloc_regs, sema::sema, token::tokenize,
+    };
+
+    #[wasm_bindgen]
+    pub struct Compiler {}
+
+    fn fsread(_: &str) -> Option<String> {
+        Some("test".to_string())
+    }
+
+    #[wasm_bindgen]
+    impl Compiler {
+        pub fn compile(fs: &Fs, filenames: &str) -> Result<String, String> {
+            let filenames = filenames.split(':').collect::<Vec<_>>();
+
+            let tokens = tokenize(
+                fs.read(filenames[0]).unwrap(),
+                filenames[0].to_string(),
+                &mut Preprocessor::new(Box::new(fsread)),
+            );
+
+            let nodes = parse(&tokens);
+            let (nodes, globals) = sema(nodes);
+            let mut fns = gen_ir(nodes);
+
+            alloc_regs(&mut fns);
+
+            let mut output = Vec::new();
+            gen_asm(&mut output, globals, fns);
+
+            Ok(String::from_utf8(output).unwrap())
+        }
+    }
+}
